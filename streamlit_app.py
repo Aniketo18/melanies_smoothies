@@ -39,6 +39,20 @@ if ingredients_list:
 
     st.write("Ingredients Selected:", ingredients_string)
 
+    # Display fruit nutrition information
+    for fruit in ingredients_list:
+        st.subheader(fruit+ 'Nutrition Information')
+        smoothiefroot_response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{fruit.lower()}"
+        )
+
+        if smoothiefroot_response.status_code == 200:
+            st.subheader(f"{fruit} Nutrition Information")
+            st.dataframe(
+                data=smoothiefroot_response.json(),
+                use_container_width=True
+            )
+
     # Submit button
     if st.button("Submit Order"):
 
@@ -54,8 +68,4 @@ if ingredients_list:
         st.success(
             f"✅ Your Smoothie has been ordered, {name_on_order}!"
         )
-#new section to disply smoothiefroot nutrition information
  
-smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")  
-#st.text(smoothiefroot_response)
-sf_df=st.dataframe(data=smoothiefroot_response.json(),use_container_width=True)
