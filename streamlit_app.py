@@ -45,9 +45,9 @@ fruit_options = pd_df["FRUIT_NAME"].tolist()
 
 # Ingredient Selection
 ingredients_list = st.multiselect(
-    "Choose up to 6 ingredients:",
+    "Choose up to 5 ingredients:",
     fruit_options,
-    max_selections=6
+    max_selections=5
 )
 
 # Process Order
@@ -64,17 +64,9 @@ if ingredients_list:
 
         try:
             # Get SEARCH_ON value
-            search_on = pd_df.loc[
-                pd_df['FRUIT_NAME'] == fruit_chosen,
-                'SEARCH_ON'
-            ].iloc[0]
-
-            st.write(
-                "The search value for",
-                fruit_chosen,
-                "is",
-                search_on
-            )
+            smoothiefroot_response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{search_value}"
+                )
 
             # API call using SEARCH_ON
             smoothiefroot_response = requests.get(
