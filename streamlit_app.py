@@ -41,16 +41,36 @@ if ingredients_list:
 
     # Display fruit nutrition information
     for fruit in ingredients_list:
-        st.subheader(fruit+ 'Nutrition Information')
-        smoothiefroot_response = requests.get(
-            f"https://my.smoothiefroot.com/api/fruit/{fruit.lower()}"
-        )
 
-        if smoothiefroot_response.status_code == 200:
-            st.subheader(f"{fruit} Nutrition Information")
-            st.dataframe(
-                data=smoothiefroot_response.json(),
-                use_container_width=True
+        st.subheader(f"🍓 {fruit}")
+
+        try:
+            smoothiefroot_response = requests.get(
+                f"https://my.smoothiefroot.com/api/fruit/{fruit.lower()}"
+            )
+
+            if smoothiefroot_response.status_code == 200:
+
+                fruit_data = smoothiefroot_response.json()
+
+                if fruit_data:
+                    st.dataframe(
+                        data=fruit_data,
+                        use_container_width=True
+                    )
+                else:
+                    st.warning(
+                        f"Sorry, no information available for {fruit}."
+                    )
+
+            else:
+                st.warning(
+                    f"Sorry, no information available for {fruit}."
+                )
+
+        except Exception:
+            st.warning(
+                f"Sorry, no information available for {fruit}."
             )
 
     # Submit button
