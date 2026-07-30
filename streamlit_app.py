@@ -29,7 +29,7 @@ fruit_rows = (
     .collect()
 )
 
-# Create dataframe named pd_df
+# Create pandas dataframe
 pd_df = pd.DataFrame(
     [
         {
@@ -40,7 +40,7 @@ pd_df = pd.DataFrame(
     ]
 )
 
-# Fruit options for multiselect
+# Create list for multiselect
 fruit_options = pd_df["FRUIT_NAME"].tolist()
 
 # Ingredient Selection
@@ -57,20 +57,31 @@ if ingredients_list:
 
     st.write("Ingredients Selected:", ingredients_string)
 
-    # Display fruit nutrition information
+    # Display nutrition info
     for fruit_chosen in ingredients_list:
 
         st.subheader(f"🍓 {fruit_chosen}")
 
         try:
             # Get SEARCH_ON value
-            smoothiefroot_response = requests.get(
-            f"https://my.smoothiefroot.com/api/fruit/{search_value}"
-                )
+            search_on = pd_df.loc[
+                pd_df["FRUIT_NAME"] == fruit_chosen,
+                "SEARCH_ON"
+            ].iloc[0]
 
-            # API call using SEARCH_ON
+            # Use FRUIT_NAME if SEARCH_ON is empty
+            if pd.isna(search_on) or str(search_on).strip() == "":
+                search_value = fruit_chosen.lower()
+            else:
+                search_value = str(search_on).lower()
+
+            # Debug information
+            st.write("Fruit Chosen:", fruit_chosen)
+            st.write("Search Value:", search_value)
+
+            # API Call
             smoothiefroot_response = requests.get(
-                f"https://my.smoothiefroot.com/api/fruit/{search_on}"
+                f"https://my.smoothiefroot.com/api/fruit/{search_value}"
             )
 
             if smoothiefroot_response.status_code == 200:
@@ -89,14 +100,11 @@ if ingredients_list:
 
             else:
                 st.warning(
-                    f"Sorry, no information available for {fruit_chosen}."
+                    f"API returned status code {smoothiefroot_response.status_code}"
                 )
 
         except Exception as e:
-            st.warning(
-                f"Sorry, no information available for {fruit_chosen}."
-            )
-            st.error(str(e))
+            st.error(f"Error for {fruit_chosen}: {str(e)}")
 
     # Submit Order
     if st.button("Submit Order"):
